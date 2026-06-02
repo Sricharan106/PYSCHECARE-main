@@ -1389,3 +1389,7 @@ p::selection{
         transform: rotate(360deg);
     }
 }
+
+.delay-300 {
+    animation-delay: 0.3s;
+}
