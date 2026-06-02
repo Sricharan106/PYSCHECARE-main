@@ -1,4 +1,7 @@
 import sys
+import logging
+
+logging.basicConfig(level=logging.ERROR)
 import os
 import json
 import random
@@ -59,15 +62,22 @@ def load_chatbot_model():
                 words, classes, training, output = pickle.load(f)
             model = load_model(model_path)
             print("Chatbot model loaded successfully!")
-        except Exception as e:
-            print(f"Error loading model: {e}")
+        except FileNotFoundError as e:
+            print(f"Required model file is missing: {e.filename}")
             print("You need to train the model first or provide the model files")
+            return False
+        except OSError as e:
+            print(f"OS error occurred while loading files: {e}")
+            return False
+        except Exception as e:
+            # If an unexpected error happens, log the full stack trace for debugging
+            logging.exception("An unexpected error occurred while loading the chatbot model.")
             return False
             
         return True
     
     except Exception as e:
-        print(f"Error initializing chatbot: {e}")
+        logging.exception("An unexpected error occurred while initializing the chatbot.")
         return False
 
 # Helper functions from the Python chatbot implementation
@@ -155,7 +165,7 @@ def get_chatbot_response(message, user_id="000"):
         return "I apologize if my response wasn't what you were looking for. As an AI assistant, my knowledge is limited. Is there another way I can help you?"
     
     except Exception as e:
-        print(f"Error getting chatbot response: {e}")
+        logging.exception("An unexpected error occurred while getting the chatbot response.")
         return "Sorry, I'm having trouble processing your request right now."
 
 def detect_language(text):
