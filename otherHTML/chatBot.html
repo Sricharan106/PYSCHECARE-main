@@ -231,12 +231,17 @@
             const msgerForm = document.querySelector(".msger-inputarea");
             const msgerInput = document.querySelector(".msger-input");
             const msgerChat = document.querySelector(".msger-chat");
+            const msgerSendBtn = document.querySelector(".msger-send-btn");
 
             if (msgerForm) {
-                msgerForm.addEventListener("submit", event => {
+                msgerForm.addEventListener("submit", async event => {
                     event.preventDefault();
                     const msgText = msgerInput.value.trim();
                     if (!msgText) return;
+
+                    // Frontend Debouncing: Disable inputs while waiting for response
+                    msgerInput.disabled = true;
+                    if (msgerSendBtn) msgerSendBtn.disabled = true;
 
                     // Add user message to chat
                     appendMessage(PERSON_NAME, PERSON_IMG, "right", msgText);
@@ -245,8 +250,13 @@
                     // Show typing indicator
                     showTypingIndicator();
 
-                    // Call the Flask API
-                    fetchBotResponse(msgText);
+                    // Call the Flask API and await the response
+                    await fetchBotResponse(msgText);
+                    
+                    // Re-enable inputs after response
+                    msgerInput.disabled = false;
+                    if (msgerSendBtn) msgerSendBtn.disabled = false;
+                    msgerInput.focus();
                 });
             }
         }
