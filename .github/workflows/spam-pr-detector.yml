@@ -32,6 +32,9 @@ jobs:
             //    • ONLY modifies README.md (and nothing else) AND
             //      the PR does NOT carry the "type:docs" label.
             //
+            //  CONDITION C — Empty or missing PR description
+            //    • PR body is empty or shorter than 20 characters.
+            //
             //  ACTION:
             //    • First offence        → add "spam" label + warning comment
             //    • Spam label present   → close PR + comment
@@ -86,8 +89,8 @@ jobs:
             const hasDocs     = labelNames.has('type:docs');
 
             // Also check if the PR title / body claims level:advanced
-            const title = (context.payload.pull_request.title || '').toLowerCase();
-            const body  = (context.payload.pull_request.body  || '').toLowerCase();
+            const title  = (context.payload.pull_request.title || '').toLowerCase();
+            const body   = (context.payload.pull_request.body  || '').toLowerCase();
             const claimsAdvanced = /level[:\s-]*advanced|advanced[\s-]*level/.test(title + ' ' + body);
 
             // ── 4. Evaluate conditions ────────────────────────────────────
@@ -100,11 +103,16 @@ jobs:
                                filenames.every(f => f === 'readme.md');
             const condB = onlyReadme && !hasDocs;
 
-            console.log(`Condition A (tiny+advanced): ${condA}`);
-            console.log(`Condition B (readme-only, no docs tag): ${condB}`);
+            // CONDITION C: empty or very short PR description (< 20 characters)
+            const prBody = (context.payload.pull_request.body || '').trim();
+            const condC  = prBody.length < 20;
+
+            console.log(`Condition A (tiny+advanced)         : ${condA}`);
+            console.log(`Condition B (readme-only, no docs)  : ${condB}`);
+            console.log(`Condition C (empty description)     : ${condC} — body length: ${prBody.length}`);
 
             // ── 5. PR passes all checks ───────────────────────────────────
-            if (!condA && !condB) {
+            if (!condA && !condB && !condC) {
               // If PR was previously flagged but contributor has now fixed it,
               // auto-remove the spam label and post a clearance message
               if (hasSpam) {
@@ -149,6 +157,12 @@ jobs:
               reasons.push(
                 `- **README-only change without \`type:docs\` label**: PRs that only modify \`README.md\` ` +
                 `must carry the \`type:docs\` label so maintainers can triage them correctly.`
+              );
+            if (condC)
+              reasons.push(
+                `- **Missing or empty PR description**: Your PR description is too short ` +
+                `(**${prBody.length} character(s)**). Please describe what changes you made and why. ` +
+                `A good description helps maintainers understand and review your work faster.`
               );
 
             const reasonBlock = reasons.join('\n');
@@ -202,7 +216,8 @@ jobs:
                   ``,
                   `If you believe this was a mistake, please open a new PR that:`,
                   `- Contains **meaningful changes** (3+ lines of substantive code), OR`,
-                  `- Correctly uses the \`type:docs\` label for documentation-only changes.`,
+                  `- Correctly uses the \`type:docs\` label for documentation-only changes, OR`,
+                  `- Includes a **clear description** of what was changed and why (20+ characters).`,
                   ``,
                   `Please also review our [Contributing Guidelines](https://github.com/${owner}/${repo}/blob/main/CONTRIBUTING.md) before resubmitting.`,
                   ``,
