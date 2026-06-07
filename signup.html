@@ -4,9 +4,7 @@
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Login | PsycheCare</title>
-
-    <script src="https://kit.fontawesome.com/1b2b6a64da.js" crossorigin="anonymous"></script>
+    <title>Sign Up | PsycheCare</title>
 
     <link rel="stylesheet" href="style.css">
     <link rel="icon" href="Images/B_icon01.png">
@@ -103,31 +101,21 @@
             display: none;
         }
 
-        .locked-banner {
-            display: none;
-            background: linear-gradient(135deg, #c0392b, #e74c3c);
-            color: #fff;
-            padding: 1rem 1.25rem;
-            border-radius: 10px;
-            margin-bottom: 1.25rem;
-            font-size: 0.95rem;
-            font-weight: 500;
-            text-align: center;
-            line-height: 1.6;
+        .password-strength-bar {
+            height: 4px;
+            border-radius: 4px;
+            margin-top: 6px;
+            background: #e0e0e0;
+            transition: background 0.3s;
         }
-        .locked-banner strong { font-size: 1.05rem; }
-
-        .logout-toast {
-            display: none;
-            background: #2ecc71;
-            color: #fff;
-            padding: 0.75rem 1.25rem;
-            border-radius: 8px;
-            margin-bottom: 1.25rem;
-            font-size: 0.95rem;
+        .strength-label {
+            font-size: 0.78rem;
+            margin-top: 3px;
             font-weight: 500;
-            text-align: center;
         }
+        .strength-weak   { background: #e74c3c; }
+        .strength-medium { background: #f39c12; }
+        .strength-strong { background: #2ecc71; }
     </style>
 </head>
 <body>
@@ -144,17 +132,17 @@
                     <li><a href="index.html#section-3">CHAT BOT</a></li>
                     <li><a href="otherHTML/statistics.html">STATISTICS</a></li>
                     <li><a href="index.html#footer">CONTACT</a></li>
-                    <li><a href="login.html" class="active">LOGIN</a></li>
+                    <li><a href="signup.html" class="active">SIGN UP</a></li>
                 </ul>
             </div>
 
             <div class="hamburger">
-                <diV class="line line1"></diV>
+                <div class="line line1"></div>
                 <div class="mid-line-cont">
                     <div class="line mid-line1"></div>
                     <div class="line mid-line2"></div>
                 </div>
-                <diV class="line line3"></diV>
+                <div class="line line3"></div>
             </div>
         </div>
     </div>
@@ -170,49 +158,49 @@
                 <li><a href="index.html#section-3" class="mobile-view-list">CHAT BOT</a></li>
                 <li><a href="otherHTML/statistics.html" class="mobile-view-list">STATISTICS</a></li>
                 <li><a href="index.html#footer" class="mobile-view-list">CONTACT</a></li>
-                <li><a href="login.html" class="mobile-view-list">LOGIN</a></li>
+                <li><a href="signup.html" class="mobile-view-list">SIGN UP</a></li>
             </ul>
         </div>
     </div>
 
-    <!-- Login Form -->
+    <!-- Sign Up Form -->
     <div class="login-container">
-        <div id="logout-toast" class="logout-toast">✅ You have been successfully logged out.</div>
-        <div id="locked-banner" class="locked-banner">
-            🔒 <strong>Account temporarily locked</strong><br>
-            Too many failed login attempts.<br>
-            <span id="locked-msg">Please try again in 15 minutes.</span>
-        </div>
         <div class="login-header">
             <div class="login-illustration">
                 <img src="Images/illustration-new/home-bot-img.png" alt="Login">
             </div>
-            <h2 style="color: var(--dark-color);">Welcome to <span style="color: var(--primary-color);">PsycheCare</span></h2>
-            <p style="color: var(--dark-color); font-size: 0.9rem;">Sign in to access your personal dashboard</p>
+            <h2 style="color: var(--dark-color);">Join <span style="color: var(--primary-color);">PsycheCare</span></h2>
+            <p style="color: var(--dark-color); font-size: 0.9rem;">Create your account and begin your wellness journey</p>
         </div>
 
-        <form method="POST" action="login.php">
+        <form action="signup.php" method="post" class="login-form">
             <div class="form-group">
                 <label for="username">Username</label>
                 <input type="text" id="username" name="username" required>
             </div>
 
             <div class="form-group">
-                <label for="password">Password</label>
-                <input type="password" id="password" name="password" required>
-                <p class="error-message" id="login-error">Invalid username or password</p>
+                <label for="email">Email</label>
+                <input type="email" id="email" name="email" required>
             </div>
 
-            <button type="submit" class="login-btn">Log In</button>
+            <div class="form-group">
+                <label for="password">Password</label>
+                <input type="password" id="password" name="password" required minlength="8" autocomplete="new-password" aria-describedby="password-strength-label">
+                <div class="password-strength-bar" id="strength-bar"></div>
+                <p class="strength-label" id="password-strength-label" aria-live="polite"></p>
+                <p class="error-message" id="signup-error"></p>
+            </div>
+
+            <button type="submit" class="login-btn">Create Account</button>
             
             <div class="return-home">
                 <p>
-                    Don't have an account?
-                    <a href="signup.html">Sign Up</a>
+                    Already have an account?
+                    <a href="login.html">Log In</a>
                 </p>
-
                 <p style="margin-top:10px;">
-                     <a href="index.html">Return to Home</a>
+                    <a href="index.html">Return to Home</a>
                 </p>
             </div>
         </form>
@@ -220,39 +208,58 @@
 
     <script src="otherJS/hamberger.js"></script>
     <script>
-        const urlParams = new URLSearchParams(window.location.search);
+        // ── Password Strength Meter ────────────────────────────────────────────
+        const passwordInput = document.getElementById('password');
+        const strengthBar   = document.getElementById('strength-bar');
+        const strengthLabel = document.getElementById('password-strength-label');
 
-        // Show error message if login fails
-        if (urlParams.has('error')) {
-            const loginError = document.getElementById('login-error');
-            const err = urlParams.get('error');
+        passwordInput.addEventListener('input', function () {
+            const val = this.value;
+            let score = 0;
+            if (val.length >= 8)  score++;
+            if (val.length >= 12) score++;
+            if (/[A-Z]/.test(val)) score++;
+            if (/[0-9]/.test(val)) score++;
+            if (/[^A-Za-z0-9]/.test(val)) score++;
 
-            if (err === 'locked') {
-                // Show the prominent locked banner instead of the inline error
-                const banner = document.getElementById('locked-banner');
-                const minutes = parseInt(urlParams.get('minutes') || '15', 10);
-                document.getElementById('locked-msg').textContent =
-                    `Your account is locked. Please try again in ${minutes} minute${minutes !== 1 ? 's' : ''}.`;
-                banner.style.display = 'block';
-                // Disable the form so users don't keep hammering
-                document.querySelector('.login-btn').disabled = true;
-                document.querySelector('.login-btn').style.opacity = '0.5';
-            } else if (err === 'db') {
-                loginError.textContent = 'Login is temporarily unavailable. Please try again.';
-                loginError.style.display = 'block';
-            } else if (err === 'rate_limit') {
-                loginError.textContent = 'Too many failed attempts from your network. Please try again in 15 minutes.';
-                loginError.style.display = 'block';
+            strengthBar.className = 'password-strength-bar';
+            if (val.length === 0) {
+                strengthLabel.textContent = '';
+            } else if (score <= 2) {
+                strengthBar.classList.add('strength-weak');
+                strengthLabel.textContent = '🔴 Weak — use 8+ chars, numbers & symbols';
+                strengthLabel.style.color = '#e74c3c';
+            } else if (score <= 3) {
+                strengthBar.classList.add('strength-medium');
+                strengthLabel.textContent = '🟡 Medium — add uppercase or symbols';
+                strengthLabel.style.color = '#f39c12';
             } else {
-                loginError.textContent = 'Invalid username or password';
-                loginError.style.display = 'block';
+                strengthBar.classList.add('strength-strong');
+                strengthLabel.textContent = '🟢 Strong password!';
+                strengthLabel.style.color = '#2ecc71';
             }
-        }
+        });
+        // ─────────────────────────────────────────────────────────────────────
 
-        // Show logout success toast
-        if (urlParams.get('logged_out') === '1') {
-            const toast = document.getElementById('logout-toast');
-            if (toast) toast.style.display = 'block';
+        // Show error or success messages from URL parameters
+        const urlParams = new URLSearchParams(window.location.search);
+        const errorMsg = document.getElementById('signup-error');
+        if (urlParams.has('error')) {
+            const err = urlParams.get('error');
+            errorMsg.style.display = 'block';
+            if (err === 'exists') {
+                errorMsg.textContent = 'Username already exists.';
+            } else if (err === 'email_exists') {
+                errorMsg.textContent = 'Email address already registered.';
+            } else if (err === 'rate_limit') {
+                errorMsg.textContent = 'Too many attempts. Please try again in an hour.';
+            } else if (err === 'weak_password') {
+                errorMsg.textContent = 'Password must be at least 8 characters.';
+            } else if (err === 'db') {
+                errorMsg.textContent = 'Database error. Please try again.';
+            } else {
+                errorMsg.textContent = 'Sign up failed. Please try again.';
+            }
         }
     </script>
     <script>
@@ -270,6 +277,7 @@
             })
             .catch(error => console.error('Error fetching CSRF token:', error));
     </script>
-     <script src="otherJS/accessibility.js"></script>
+    <script src="https://kit.fontawesome.com/1b2b6a64da.js" crossorigin="anonymous"></script>
+    <script src="otherJS/accessibility.js"></script>
 </body>
 </html>
