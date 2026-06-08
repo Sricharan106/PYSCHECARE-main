@@ -33,6 +33,10 @@ try {
 
     // Check AND Increment atomically: 5 attempts per 15 minutes
     if (!enforceRateLimit($db, $rateKey, 5, 900)) {
+        header("Location: login.html?error=rate_limit");
+        exit();
+    }
+
     // ── Layer 1: IP-based rate limit (5 attempts per 15 min per IP) ───────────
     if (!checkRateLimit($db, $rateKey, 5, 900)) {
         header("Location: login.html?error=rate_limit");

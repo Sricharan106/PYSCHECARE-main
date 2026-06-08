@@ -14,17 +14,33 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         die("Invalid CSRF token.");
     }
 
-    $name    = htmlspecialchars(trim($_POST['name'] ?? ''));
-    $email   = htmlspecialchars(trim($_POST['email'] ?? ''));
-    $message = htmlspecialchars(trim($_POST['message'] ?? ''));
+    $name = trim($_POST['name'] ?? '');
+    $email = trim($_POST['email'] ?? '');
+    $message = trim($_POST['message'] ?? '');
 
     if (!$name || !$email || !$message) {
         die("All fields are required.");
     }
 
+    if (strlen($name) > 100) {
+        die("Name must not exceed 100 characters.");
+    }
+
+    if (strlen($email) > 255) {
+        die("Email must not exceed 255 characters.");
+    }
+
+    if (strlen($message) > 1000) {
+        die("Message must not exceed 1000 characters.");
+    }
+
     if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
         die("Invalid email address.");
     }
+
+    $name = htmlspecialchars($name);
+    $email = htmlspecialchars($email);
+    $message = htmlspecialchars($message);
 
     try {
         require_once __DIR__ . '/database.php';
