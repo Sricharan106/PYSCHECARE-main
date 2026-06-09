@@ -38,15 +38,11 @@ function getAuthDatabase(): PDO
 
 function getIPAddress(): string
 {
-    if (!empty($_SERVER['HTTP_CLIENT_IP'])) {
-        return $_SERVER['HTTP_CLIENT_IP'];
-    } elseif (!empty($_SERVER['HTTP_X_FORWARDED_FOR'])) {
-        // X-Forwarded-For can contain multiple IPs, the first one is the client
-        $ips = explode(',', $_SERVER['HTTP_X_FORWARDED_FOR']);
-        return trim($ips[0]);
-    } else {
-        return $_SERVER['REMOTE_ADDR'] ?? 'unknown';
-    }
+    // SECURITY WARNING: Blindly trusting HTTP_X_FORWARDED_FOR allows attackers 
+    // to bypass rate limiting via IP spoofing. We strictly use REMOTE_ADDR.
+    // If behind a trusted reverse proxy (like Cloudflare or Nginx), the proxy 
+    // should be configured to overwrite REMOTE_ADDR at the web server level.
+    return $_SERVER['REMOTE_ADDR'] ?? 'unknown';
 }
 
 function checkRateLimit(PDO $db, string $key, int $maxAttempts, int $windowSeconds): bool
