@@ -1406,7 +1406,6 @@ p::selection{
 
 /* ++++++++++++++++++++ FOOTER +++++++++++++++++++ */
 
-
 .footer{
     background-color:var(--primary-color) ;
     padding: 3em 3em .5em 3em;
@@ -1488,7 +1487,6 @@ p::selection{
 }
 
 
-
 .actual-author-contribution-cont{
     background-color: var(--dark-color);
     position:absolute;
@@ -1503,17 +1501,27 @@ p::selection{
 }
 
 
-
 .attributes-head-cont{
     display: flex;
     justify-content: space-between;
     align-items: center;
 }
 
-.cross{
-    color:var(--light-color);
-    cursor: pointer;
+.close-btn {
+  background: none;
+  border: none;
+  font-size: 1.75rem;
+  line-height: 1;
+  color: #888888;
+  cursor: pointer;
+  padding: 0;
+  transition: color 0.2s;
 }
+
+.close-btn:hover {
+  color: #ff4d4d; 
+}
+
 
 .actual-author-contribution-cont p{
     color:var(--primary-color);
@@ -1521,6 +1529,8 @@ p::selection{
     font-weight: 300;
 }
 
+<<<<<<< feat/attribute-working
+=======
 .contribution-list{
     list-style: none;
 
@@ -1613,6 +1623,7 @@ p::selection{
     }
 }
 
+>>>>>>> main
 /* Adding fade-in animations for section transitions */
 @keyframes fadeIn {
     from { opacity: 0; transform: translateY(20px); }
