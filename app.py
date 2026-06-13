@@ -1,17 +1,19 @@
 import base64
-import hmac
 import hashlib
+import hmac
 import os
-from flask import Flask, request, jsonify
+
+from flask import Flask, jsonify, request
 from flask_cors import CORS
 from flask_limiter import Limiter
 from flask_limiter.util import get_remote_address
+
 from chatbot_integration import get_chatbot_response
-from validation import validate_chat_payload
 from crisis_detection import detect_crisis_risk, log_crisis_event
+from validation import validate_chat_payload
 
 app = Flask(__name__)
-app.config['MAX_CONTENT_LENGTH'] = 5 * 1024
+app.config["MAX_CONTENT_LENGTH"] = 5 * 1024
 
 ALLOWED_ORIGIN = os.environ.get("ALLOWED_ORIGIN")
 if not ALLOWED_ORIGIN:
@@ -43,9 +45,7 @@ def _verify_chat_token(token: str) -> str:
     try:
         payload, signature = token.split(".", 1)
         expected_sig = hmac.new(
-            CHAT_API_SECRET.encode(),
-            payload.encode(),
-            hashlib.sha256
+            CHAT_API_SECRET.encode(), payload.encode(), hashlib.sha256
         ).hexdigest()
 
         if not hmac.compare_digest(expected_sig, signature):
@@ -66,9 +66,10 @@ def chat():
 
     user_id = _verify_chat_token(token)
     if not user_id:
-        return jsonify({
-            "error": "Unauthorized. Please log in to use the chatbot."
-        }), 401
+        return (
+            jsonify({"error": "Unauthorized. Please log in to use the chatbot."}),
+            401,
+        )
 
     data = request.get_json(silent=True)
     validation_error = validate_chat_payload(data)
