@@ -1,4 +1,4 @@
-from chatbot_integration import get_chatbot_response, detect_language
+from chatbot_integration import get_chatbot_response
 
 def main():
     print("TherapEase Mental Health Chatbot")

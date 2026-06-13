@@ -1,3 +1,5 @@
+"""Chatbot integration utilities for loading the model and generating responses."""
+
 import json
 import logging
 import os
@@ -129,7 +131,7 @@ def load_chatbot_model():
             )
 
         # Load intents file
-        with open(intents_path) as file:
+        with open(intents_path, encoding="utf-8") as file:
             intents = json.load(file)
 
         # Try to load existing model and data
@@ -138,8 +140,6 @@ def load_chatbot_model():
                 data_dict = json.load(f)
                 words = data_dict.get("words", [])
                 classes = data_dict.get("classes", [])
-                training = data_dict.get("training", [])
-                output = data_dict.get("output", [])
             model = load_model(model_path)
             print("Chatbot model loaded successfully!")
         except FileNotFoundError as e:
@@ -149,7 +149,7 @@ def load_chatbot_model():
         except OSError as e:
             print(f"OS error occurred while loading files: {e}")
             return False
-        except Exception as e:
+        except Exception:
             # If an unexpected error happens, log the full stack trace for debugging
             logging.exception(
                 "An unexpected error occurred while loading the chatbot model."
@@ -158,7 +158,7 @@ def load_chatbot_model():
 
         return True
 
-    except Exception as e:
+    except Exception:
         logging.exception(
             "An unexpected error occurred while initializing the chatbot."
         )
@@ -276,9 +276,13 @@ def get_chatbot_response(message, user_id="000"):
                 results.pop(0)
 
         # Default response if no matching intent
-        return "I apologize if my response wasn't what you were looking for. As an AI assistant, my knowledge is limited. Is there another way I can help you?"
+        return (
+            "I apologize if my response wasn't what you were looking for. "
+            "As an AI assistant, my knowledge is limited. "
+            "Is there another way I can help you?"
+        )
 
-    except Exception as e:
+    except Exception:
         logging.exception(
             "An unexpected error occurred while getting the chatbot response."
         )
